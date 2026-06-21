@@ -179,9 +179,18 @@ if __name__ == "__main__":
     with open("output/results_2_"+str(time.time())+".txt", "w") as fout:
         fout.write("DATASET="+DATA+"\n")
         fout.write("MODEL="+MODEL+"\n")
+        total = 0
+        successful_mitigations = 0
         for index, tup in enumerate(evaluation_data):
             constraint, contradiction, violation_encouragement, check = tup
             result, answer = main(constraint, contradiction, violation_encouragement, check)
+
+            total += 1
+            if result == "False":  # Not jailbroken by the injected prompt
+                successful_mitigations += 1
+
             answer = answer.replace("\n"," ").replace("\t","    ")
             fout.write(str(index+1) + "\t" + str(answer) + "\t" + str(result) + "\n")
+        fout.write("Successful mitigations="+str(successful_mitigations)+"\n")
+        fout.write("Successful mitigation percentage="+str(round(successful_mitigations*100/total, 4))+"\n")
         fout.flush()
