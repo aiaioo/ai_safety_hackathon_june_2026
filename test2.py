@@ -23,9 +23,11 @@ MODEL=os.getenv("MODEL")
 #MODEL="Qwen/Qwen2.5-7B-Instruct-Turbo"
 #MODEL="Qwen/Qwen3.5-9B"
 
+DATA = "data/data.txt"
+
 def read_evaluation_data():
 	data = []
-	with open("data/data.txt", "r", encoding="utf-8") as file:
+	with open(DATA, "r", encoding="utf-8") as file:
 		for index, line in enumerate(file):
 			if index>0:
 				clean_line = line.strip()
@@ -171,13 +173,15 @@ def main(constraint, contradiction, violation_encouragement, check):
     if is_print_traces:
         print(json.dumps(messages, indent=4))
 
-    return res
+    return res, result
 
 if __name__ == "__main__":
     with open("output/results_2_"+str(time.time())+".txt", "w") as fout:
+        fout.write("DATASET="+DATA+"\n")
         fout.write("MODEL="+MODEL+"\n")
         for index, tup in enumerate(evaluation_data):
             constraint, contradiction, violation_encouragement, check = tup
-            result = main(constraint, contradiction, violation_encouragement, check)
-            fout.write(str(index+1) + "\t" + str(result) + "\n")
+            result, answer = main(constraint, contradiction, violation_encouragement, check)
+            answer = answer.replace("\n"," ").replace("\t","    ")
+            fout.write(str(index+1) + "\t" + str(answer) + "\t" + str(result) + "\n")
         fout.flush()
