@@ -1,3 +1,6 @@
+# This script tries to override instructions in the system prompt.
+# The overriding instructions are in a user prompt.
+
 # Import libraries
 import os
 import time
